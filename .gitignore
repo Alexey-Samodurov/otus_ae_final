@@ -3,3 +3,4 @@ venv
 *.pyc
 airflow_logs
 airflow_plugins
+logs
