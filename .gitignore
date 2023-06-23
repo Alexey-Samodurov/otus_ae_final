@@ -1,2 +1,5 @@
 venv
 .idea
+*.pyc
+airflow_logs
+airflow_plugins
