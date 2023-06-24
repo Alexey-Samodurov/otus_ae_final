@@ -1,0 +1,78 @@
+x-superset-common:
+  &superset-common
+  build:
+    context: .
+    dockerfile: superset.Dockerfile
+  env_file: .env.superset
+  volumes:
+    - ./docker:/app/docker
+    - superset_home:/app/superset_home
+  depends_on:
+    - redis_superset
+    - db
+
+version: '3.7'
+services:
+  #SUPERSET BLOCK
+  redis_superset:
+    env_file:
+      - .env.superset
+    image: redis:7.0
+    container_name: superset_cache
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+
+  db:
+    env_file:
+      - .env.superset
+    image: postgres:14
+    container_name: db
+    restart: unless-stopped
+    volumes:
+      - db_home:/var/lib/postgresql_superset/data
+
+  superset:
+    <<: *superset-common
+    container_name: superset_app
+    command: [ "/app/docker/docker-bootstrap.sh", "app-gunicorn" ]
+    user: "root"
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+
+  superset-init:
+    <<: *superset-common
+    container_name: superset_init
+    command: [ "/app/docker/docker-init.sh" ]
+    user: "root"
+    healthcheck:
+      disable: true
+
+  superset-worker:
+    <<: *superset-common
+    container_name: superset_worker
+    command: [ "/app/docker/docker-bootstrap.sh", "worker" ]
+    restart: unless-stopped
+    user: "root"
+    healthcheck:
+      test: [ "CMD-SHELL", "celery inspect ping -A superset.tasks.celery_app:app -d celery@$$HOSTNAME" ]
+
+  superset-worker-beat:
+    <<: *superset-common
+    container_name: superset_worker_beat
+    command: [ "/app/docker/docker-bootstrap.sh", "beat" ]
+    restart: unless-stopped
+    user: "root"
+    healthcheck:
+      disable: true
+
+
+
+volumes:
+  superset_home:
+    external: false
+  db_home:
+    external: false
+  redis:
+    external: false
