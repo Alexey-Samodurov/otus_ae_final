@@ -6,6 +6,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.utils.task_group import TaskGroup
+from airflow_clickhouse_plugin.operators.clickhouse_operator import ClickHouseOperator
 from airflow_dbt import DbtRunOperator, DbtTestOperator
 
 
@@ -27,6 +28,13 @@ with DAG(
         max_active_runs=1,
         tags=['samodurov'],
 ) as dag:
+
+    create_database = ClickHouseOperator(
+        task_id='create_database',
+        clickhouse_conn_id='clickhouse',
+        sql='CREATE DATABASE IF NOT EXISTS TEST'
+    )
+
     with TaskGroup('create_triggers') as create_triggers:
         triggers_list = []
         for dag_name in ['yandex_direct_custom_report_dinamic_factory',
@@ -84,4 +92,6 @@ with DAG(
         python_callable=import_dashboard
     )
 
-    create_triggers >> dbt_build_stage_layer_ >> dbt_build_marts_layer_ >> dbt_run_marts_tests_ >> import_dashboard_
+    create_database >> create_triggers >> dbt_build_stage_layer_ >> dbt_build_marts_layer_ >> dbt_run_marts_tests_
+    dbt_run_marts_tests_ >> import_dashboard_
+
