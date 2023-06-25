@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: TEST
+    schema: TEST
+
+    tables:
+      - name: yandex_direct_custom_report
+        identifier: yandex_direct_custom_report
+      - name: my_target_ad_groups_all
+        identifier: my_target_ad_groups_all

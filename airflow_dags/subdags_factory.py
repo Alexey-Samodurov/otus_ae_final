@@ -13,8 +13,7 @@ from yandex_direct.direct import Direct
 LOCAL_TZ = pendulum.timezone('Europe/Moscow')
 DEFAULT_ARGS = {
     'owner': 'airflow',
-    'start_date': datetime(2023, 5, 5, tzinfo=LOCAL_TZ),
-    'end_date': datetime(2023, 6, 5, tzinfo=LOCAL_TZ),
+    'start_date': datetime(2023, 6, 5, tzinfo=LOCAL_TZ),
     'depends_on_past': False,
     'catchup': True
 }
@@ -76,7 +75,7 @@ for conn in [my_target_conn, my_target_url, yandex_direct_conn, yandex_direct_ur
 FACTORIES_CFG = {
     yandex_direct_dags_factory: {
         "dag_id": "yandex_direct_custom_report_dinamic_factory",
-        "schedule_interval": "@daily",
+        "schedule_interval": None,
         "default_args": DEFAULT_ARGS,
         "yandex_direct_conn_id": yandex_direct_conn.conn_id,
         "s3_conn_id": s3_conn.conn_id,
@@ -92,7 +91,7 @@ FACTORIES_CFG = {
     },
     my_target_dag_factory: {
         "dag_id": "my_target_custom_report_dinamic_factory",
-        "schedule_interval": "@daily",
+        "schedule_interval": None,
         "default_args": DEFAULT_ARGS,
         'mt_conn_id': my_target_conn.conn_id,
         'ch_conn_id': clickhouse_conn.conn_id,

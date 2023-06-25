@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: media_demo
+    description: "{{ doc('media_demo') }}"
+    columns:
+      - name: clicks
+        description: "clicks"
+        tests:
+          - not_null
+          - lesser_then_zero
+
+      - name: cost
+        description: "cost"
+        tests:
+          - not_null
+          - lesser_then_zero
+      
+      - name: cpc
+        description: "cpc"
+        tests:
+          - not_null
+          - lesser_then_zero
+
+      - name: ctr
+        description: "ctr"
+        tests:
+          - not_null
+          - lesser_then_zero
+            

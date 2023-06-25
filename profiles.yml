@@ -1,0 +1,27 @@
+dbt_media:
+  target: stg
+  outputs:
+
+    stg:
+      type: clickhouse
+      schema: TEST # ClickHouse database for dbt models
+      # optional
+      database_engine: Atomic
+      driver: native # http or native.  If not set this will be autodetermined based on port setting
+      host: clickhouse
+      port: 9000  # If not set, defaults to 8123, 8443, 9000, 9440 depending on the secure and driver settings 
+      user: default # User for all database operations
+      password: '' # Password for the user
+      verify: False # Validate TLS certificate if using TLS/SSL
+      secure: False # Use TLS (native protocol) or HTTPS (http protocol)
+      threads: 5
+      retries: 1 # Number of times to retry a "retriable" database exception (such as a 503 'Service Unavailable' error)
+      connect_timeout: 10 # Timeout in seconds to establish a connection to ClickHouse
+      send_receive_timeout: 30000 # Timeout in seconds to receive data from the ClickHouse server
+      cluster_mode: False # Use specific settings designed to improve operation on Replicated databases (recommended for ClickHouse Cloud)
+      use_lw_deletes: True # Use the strategy `delete+insert` as the default incremental strategy.
+      check_exchange: True # Validate that clickhouse support the atomic EXCHANGE TABLES command.  (Not needed for most ClickHouse versions)
+      sync_request_timeout: 5 # Timeout for server ping
+      compress_block_size: 1048576 # Compression block size if compression is enabled
+
+    

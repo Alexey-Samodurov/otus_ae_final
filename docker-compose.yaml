@@ -1,4 +1,5 @@
 version: '3.8'
+
 x-airflow-common:
   &airflow-common
   build:
@@ -6,9 +7,10 @@ x-airflow-common:
     dockerfile: airflow.Dockerfile
   env_file: .env.airflow
   volumes:
-    - /mnt/e/git_repo/otus_ae_final/airflow_dags:/opt/airflow/dags
-    - /mnt/e/git_repo/otus_ae_final/airflow_logs:/opt/airflow/logs
-    - /mnt/e/git_repo/otus_ae_final/airflow_plugins:/opt/airflow/plugins
+    - ./airflow_dags:/opt/airflow/dags
+    - ./airflow_logs:/opt/airflow/logs
+    - ./airflow_plugins:/opt/airflow/plugins
+    - ./dbt_media:/opt/airflow/dbt_media
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -16,6 +18,19 @@ x-airflow-common:
       condition: service_healthy
     postgres:
       condition: service_healthy
+
+x-superset-common:
+  &superset-common
+  build:
+    context: .
+    dockerfile: superset.Dockerfile
+  env_file: .env.superset
+  volumes:
+    - ./docker:/app/docker
+    - superset_home:/app/superset_home
+  depends_on:
+    - redis
+    - db
 
 services:
 
@@ -211,6 +226,55 @@ services:
       - -c
       - airflow
 
+  #SUPERSET BLOCK
+  db:
+    env_file:
+      - .env.superset
+    image: postgres:14
+    container_name: db
+    restart: unless-stopped
+    volumes:
+      - db_home:/var/lib/postgresql_superset/data
+
+  superset:
+    <<: *superset-common
+    container_name: superset_app
+    command: [ "/app/docker/docker-bootstrap.sh", "app-gunicorn" ]
+    user: "root"
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+
+  superset-init:
+    <<: *superset-common
+    container_name: superset_init
+    command: [ "/app/docker/docker-init.sh" ]
+    user: "root"
+    healthcheck:
+      disable: true
+
+  superset-worker:
+    <<: *superset-common
+    container_name: superset_worker
+    command: [ "/app/docker/docker-bootstrap.sh", "worker" ]
+    restart: unless-stopped
+    user: "root"
+    healthcheck:
+      test: [ "CMD-SHELL", "celery inspect ping -A superset.tasks.celery_app:app -d celery@$$HOSTNAME" ]
+
+  superset-worker-beat:
+    <<: *superset-common
+    container_name: superset_worker_beat
+    command: [ "/app/docker/docker-bootstrap.sh", "beat" ]
+    restart: unless-stopped
+    user: "root"
+    healthcheck:
+      disable: true
+
 volumes:
   postgres-db-volume:
   clickhouse-data:
+  superset_home:
+    external: false
+  db_home:
+    external: false
