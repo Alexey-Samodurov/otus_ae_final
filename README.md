@@ -1,5 +1,5 @@
 # Otus analytics engineer final project
-
+Theme: Автоматизация аналитики и визуализации данных на примере медийных кабинетов, с помощью Airflow, DBT, ClickHouse и Superset. 
 ## How to run:
 
 ### Note: 
@@ -16,6 +16,6 @@
 2. Run `run.sh`:
     - example: `./run.sh`
 
-3. Airflow is available url `http://localhost:8080`
+3. Airflow available url: `http://localhost:8080`
 
-4. Superset is available url `http://localhost:8088`
+4. Superset available url: `http://localhost:8088`
