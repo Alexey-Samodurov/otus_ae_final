@@ -75,7 +75,7 @@ with DAG(
         from time import sleep
         from superset_connector.superset_connector import SupersetConnector
 
-        sleep(60)
+        # sleep(60)
         ss = SupersetConnector(
             ss_url='http://superset:8088',
             username='admin',
