@@ -9,11 +9,10 @@ from airflow.utils.task_group import TaskGroup
 from airflow_clickhouse_plugin.operators.clickhouse_operator import ClickHouseOperator
 from airflow_dbt import DbtRunOperator, DbtTestOperator
 
-
 LOCAL_TZ = pendulum.timezone('Europe/Moscow')
 DEFAULT_ARGS = {
     'owner': 'airflow',
-    'start_date': datetime(2023, 6, 6, tzinfo=LOCAL_TZ),
+    'start_date': datetime(2023, 5, 6, tzinfo=LOCAL_TZ),
     'depends_on_past': False,
     'catchup': True
 }
@@ -72,10 +71,8 @@ with DAG(
 
 
     def import_dashboard():
-        from time import sleep
         from superset_connector.superset_connector import SupersetConnector
 
-        # sleep(60)
         ss = SupersetConnector(
             ss_url='http://superset:8088',
             username='admin',
