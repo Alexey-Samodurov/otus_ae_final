@@ -12,8 +12,8 @@ from airflow_dbt import DbtRunOperator, DbtTestOperator
 LOCAL_TZ = pendulum.timezone('Europe/Moscow')
 DEFAULT_ARGS = {
     'owner': 'airflow',
-    'start_date': datetime(2023, 4, 6, tzinfo=LOCAL_TZ),
-    'end_date': datetime(2023, 6, 6, tzinfo=LOCAL_TZ),
+    'start_date': datetime(2023, 5, 3, tzinfo=LOCAL_TZ),
+    'end_date': datetime(2023, 6, 29, tzinfo=LOCAL_TZ),
     'depends_on_past': False,
     'catchup': True
 }
