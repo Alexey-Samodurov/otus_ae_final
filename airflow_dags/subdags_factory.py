@@ -13,8 +13,8 @@ from yandex_direct.direct import Direct
 LOCAL_TZ = pendulum.timezone('Europe/Moscow')
 DEFAULT_ARGS = {
     'owner': 'airflow',
-    'start_date': datetime(2023, 4, 5, tzinfo=LOCAL_TZ),
-    'end_date': datetime(2023, 6, 5, tzinfo=LOCAL_TZ),
+    'start_date': datetime(2023, 5, 2, tzinfo=LOCAL_TZ),
+    'end_date': datetime(2023, 6, 28, tzinfo=LOCAL_TZ),
     'depends_on_past': False,
     'catchup': True
 }
